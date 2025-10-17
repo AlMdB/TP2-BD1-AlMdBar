@@ -1,0 +1,31 @@
+version: '3.8'
+services:
+  upload:
+    build: .
+    image: tp2-bd1:latest
+    volumes: 
+      - ./data:/data
+    command: ./bin/upload /data/input.csv
+
+
+  findrec:
+    build: .
+    image: tp2-bd1:latest
+    volumes:
+      - /data:/data
+    command: ./bin/findrec 1
+
+  seek1:
+    build: .
+    image:  tp2-bd1:latest
+    volumes:
+      - ./data:/data
+    command: ./bin/seek1 1
+
+  seek2:
+    build: .
+    image: tp2-bd1:latest
+    volumes:
+      - ./data:/data
+    command: ./bin/seek2 "Artigo"
+    
