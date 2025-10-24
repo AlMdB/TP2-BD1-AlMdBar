@@ -10,18 +10,22 @@
 #include <cstring>
 #include <unordered_map>
 
-struct HashBucket{
+#define MAX_LOAD 70
+
+struct HashBucket
+{
     size_t local_depth;
     size_t block_offset;
     size_t entry_count;
-    std::vector<std::pair<size_t,size_t>> entries; // keyhash, offsetRecord
+    std::vector<std::pair<size_t, size_t>> entries; // keyhash, offsetRecord
 };
 
-class ExtendibleHashTable{
+class ExtendibleHashTable
+{
 private:
-    Logger* logger;
-    Buffer* ram_buffer;
-    
+    Logger *logger;
+    Buffer *ram_buffer;
+
     // file path and storage variables
     std::string sec_mem_filepath;
     std::fstream sec_storage;
@@ -30,11 +34,13 @@ private:
     size_t bucket_capacity;
     size_t total_records;
 
+    std::unordered_map<size_t, HashBucket> bucket_directory;
+    std::unordered_map<size_t, size_t> hash_to_bucket;
 
-    std::unordered_map<size_t,HashBucket> bucket_directory;
-    std::unordered_map<size_t,size_t> hash_to_bucket;
+    const char metadata_suffix = ".meta";
+    const char data_file_suffix = ".data";
 
-    size_t hashFunction(const char* key);
+    size_t hashFunction(const std::string key);
     size_t getBucketIndex(size_t hash);
     void doubleDirectory();
     void splitBucket(size_t bucket_id);
@@ -44,20 +50,18 @@ private:
     void loadMetadata();
 
 public:
-    ExtensibleHashTable(const std::string& _file_path, size_t _bucket_cap = 4, Logger* _logger);
+    ExtensibleHashTable(const std::string &_file_path, size_t _bucket_cap = 4, Logger *_logger);
     ~ExtensibleHashTable();
-    
-    int insert(const char* key,const std::byte* record_data,size_t record_size);
-    int search(const char* key, std::byte*& record_data, size_t& record_size);
-    int remove(const char* key);
 
-    size_t getRecordCount() const {return total_records; }
-    size_t getGlobalDepth() const {return global_depth; }
+    int insert(const std::string &key, const std::byte *record_data, size_t record_size);
+    int search(const std::string &key, std::byte *&record_data, size_t &record_size);
+    int remove(const std::string &key);
+
+    size_t getRecordCount() const { return total_records; }
+    size_t getGlobalDepth() const { return global_depth; }
 
     void printStatistics();
     void reorganize();
-
 }
-
 
 #endif // EXTENDIBLE_HASH_TABLE_H

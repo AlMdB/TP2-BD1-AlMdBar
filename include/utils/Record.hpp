@@ -5,29 +5,51 @@
 #include "vector"
 #include <cstddef>
 
-class RecordHead{
-    enum class DBType{
-        INT,
-        ALFA,
-        DATEHOUR,
-        VARALFA,
-    };
+enum class DBFieldType
+{
+    INT,
+    ALFA,
+    DATEHOUR,
+    VARALFA,
+    UNKNOWN // useful for some error detection
+};
 
-    typedef struct DBColumnInfo{
+struct FieldGeneral
+{
+    std::string name;
+    DBFieldType type;
+    uint32_t baseSize;
+    bool isPrimary;
+    bool isIndexed;
+};
+
+typedef struct FieldSpecific
+{
+    uint32_t max_var_size;
+    uint32_t curr_var_size;
+}
+{
+}
+rec_metadata;
+
+class RecordHead
+{
+    typedef struct DBColumnInfo
+    {
         std::string columnName;
         DBType type;
         size_t size;
-    }DBCol;
+    } DBCol;
 
-
-    std::vector<DBColumnInfo>* Record_TInfo;
+    std::vector<DBColumnInfo> *Record_TInfo;
 };
 
-class Record{
+class Record
+{
 public:
     std::byte record_data;
     size_t record_size;
-    Record(std::byte _data,size_t _size) : record_data(_data),record_size(_size){};
+    Record(std::byte _data, size_t _size) : record_data(_data), record_size(_size) {};
 }
 
 #endif
